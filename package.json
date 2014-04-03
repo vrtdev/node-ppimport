@@ -1,0 +1,36 @@
+{
+  "name": "ppimport",
+  "version": "0.0.1",
+  "description": "Polopoly content importer for node.js",
+  "keywords": [
+    "polopoly",
+    "import"
+  ],
+  "main": "lib/ppimport.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vrtdev/node-ppimport"
+  },
+  "author": {
+    "name": "Mike (Michael) Seghers",
+    "email": "mike@oakcs.be"
+  },
+  "contributors": [
+    {
+      "name": "Mike (Michael) Seghers",
+      "email": "mike@oakcs.be"
+    },
+    {
+      "name": "Marc Viaene",
+      "email": "marc@mavicon.be"
+    },
+    {
+      "name": "Joris Schutijzer",
+      "email": "joris.schutijzer@digify.be"
+    }
+  ],
+  "devDependencies": {
+    "chai": "^1.9.1"
+  }
+}
