@@ -1,6 +1,21 @@
 var chai = require("chai");
 var expect = chai.expect;
-var ppimport = require("../lib/ppimport")('http://pp-dev.vrt.be/polopoly/import');
+var path = require('path');
+var fs = require('fs');
+
+function getAbsolutePath(filePath) {
+    var absolutePath;
+    if (filePath.indexOf('/') != 0) {
+        var callerDir = path.dirname(module.filename);
+        absolutePath = path.join(callerDir, filePath);
+    } else {
+        absolutePath = filePath;
+    }
+    return absolutePath;
+}
+
+var ppimport = require("../lib/ppimport")(JSON.parse(fs.readFileSync(getAbsolutePath('polopoly-options.json'), {encoding: "UTF-8"})));
+
 
 describe('ppimport', function () {
     describe('import file', function () {

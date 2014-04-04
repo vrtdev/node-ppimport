@@ -1,7 +1,7 @@
 var chai = require("chai");
 var expect = chai.expect;
 var should = chai.should();
-var ppimport = require("../lib/ppimport")('http://test.url');
+var ppimport = require("../lib/ppimport")({polopolyUrl: 'http://test.url', username: 'user name', password: 'password'});
 var sinon = require('sinon');
 var request = require('request');
 var fs = require('fs');
@@ -63,7 +63,7 @@ describe('ppimport', function () {
             var path = "./file.xml";
             requestStub.yields(null, {statusCode: 200}, null);
             ppimport.importContent(path, function (error) {
-                expect(requestStub.withArgs('http://test.url').calledOnce).to.be.ok;
+                expect(requestStub.getCall(0).args[0]).to.be.string('http://test.url?result=true&username=user%20name&password=password');
                 done();
             });
         });
@@ -82,7 +82,7 @@ describe('ppimport', function () {
             var defaultPpImport = require('../lib/ppimport')();
             requestStub.yields(null, {statusCode: 200}, null);
             defaultPpImport.importContent(path, function () {
-                expect(requestStub.getCall(0).args[0]).to.be.string('http://localhost');
+                expect(requestStub.getCall(0).args[0]).to.be.string('http://localhost?result=true&username=admin&password=admin');
                 done();
             });
         });
