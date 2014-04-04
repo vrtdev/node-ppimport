@@ -31,6 +31,10 @@
     }
   ],
   "devDependencies": {
-    "chai": "^1.9.1"
+    "chai": "^1.9.1",
+    "sinon": "^1.9.1"
+  },
+  "dependencies": {
+    "request": "^2.34.0"
   }
 }
