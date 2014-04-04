@@ -1,0 +1,53 @@
+<batch xmlns="http://www.polopoly.com/polopoly/cm/xmlio">
+
+	<!-- Create the Test Automatic category -->
+	<content>
+		<metadata>
+			<contentid>
+				<externalid>be.vrtnieuws.testautomatic</externalid>
+				<major>Department</major>
+			</contentid>
+			<input-template>
+				<externalid>it.be.vrt.cm.common.department.Category</externalid>
+			</input-template>
+			<security-parent>
+				<externalid>vrtnieuws</externalid>
+			</security-parent>
+		</metadata>
+		<component group="polopoly.UI" name="icon">publicationDept.png</component>
+		<component group="polopoly.Content" name="name">testautomatic</component>
+		<component group="title" name="value">test automatic</component>
+		<component group="staticCssFiles" name="count">0</component>
+		<component group="masterHeadStyle" name="selected">COLLAPSE</component>
+		<component group="showAdvertising" name="value">false</component>
+		<component group="inheritStaticCSSFiles" name="selected">true</component>
+		<contentref group="polopoly.Parent" name="insertParentId">
+			<contentid>
+				<externalid>vrtnieuws</externalid>
+			</contentid>
+		</contentref>
+	</content>
+
+	<!-- Link testautomatic category to vrtnieuws -->
+	<content>
+		<metadata>
+			<contentid>
+				<externalid>vrtnieuws</externalid>
+				<major>Department</major>
+			</contentid>
+		</metadata>
+		<contentlist>
+			<entry mode="modify">
+				<metadata>
+					<referredContent>
+						<contentid>
+							<externalid>be.vrtnieuws.testautomatic</externalid>
+						</contentid>
+					</referredContent>
+				</metadata>
+			</entry>
+		</contentlist>
+	</content>
+
+
+</batch>

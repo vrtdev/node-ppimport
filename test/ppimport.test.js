@@ -10,6 +10,7 @@ var events = require('events');
 describe('ppimport', function () {
     describe('import file', function () {
         var requestStub;
+        var defaultsRequestStub;
         var fsStub;
         function Stream() {
             this.pipe = function() {return this};
@@ -22,9 +23,11 @@ describe('ppimport', function () {
             stream = new Stream();
             fsStub = sinon.stub(fs, 'createReadStream').returns(stream);
             requestStub = sinon.stub(request, 'put');
+            defaultsRequestStub = sinon.stub(request, 'defaults').returns(request);
         });
 
         afterEach(function () {
+            request.defaults.restore();
             request.put.restore();
             fsStub.restore();
         });
@@ -61,6 +64,15 @@ describe('ppimport', function () {
             requestStub.yields(null, {statusCode: 200}, null);
             ppimport.importContent(path, function (error) {
                 expect(requestStub.withArgs('http://test.url').calledOnce).to.be.ok;
+                done();
+            });
+        });
+
+        it('should send the XML file to polopoly via HTTP communication and should content-type as options', function (done) {
+            var path = "./file.xml";
+            requestStub.yields(null, {statusCode: 200}, null);
+            ppimport.importContent(path, function (error) {
+                expect(JSON.stringify(defaultsRequestStub.getCall(0).args[0])).to.be.equal(JSON.stringify({headers: {'Content-Type': 'text/xml'}}));
                 done();
             });
         });
