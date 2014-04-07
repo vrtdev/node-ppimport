@@ -36,6 +36,7 @@
     "mocha": "^1.18.2"
   },
   "dependencies": {
-    "request": "^2.34.0"
+    "request": "^2.34.0",
+    "archiver": "^0.8.1"
   }
 }

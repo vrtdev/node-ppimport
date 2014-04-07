@@ -7,13 +7,17 @@ var request = require('request');
 var fs = require('fs');
 var events = require('events');
 
+
 describe('ppimport', function () {
     describe('import file', function () {
         var requestStub;
         var defaultsRequestStub;
         var fsStub;
+
         function Stream() {
-            this.pipe = function() {return this};
+            this.pipe = function () {
+                return this
+            };
             events.EventEmitter.call(this);
         };
         var stream;
@@ -121,10 +125,10 @@ describe('ppimport', function () {
         it('should result in an Error when piping yields an error', function (done) {
             var path = "./file.xml";
             var expectedError = new Error('expected');
-            stream.pipe = function() {
-                setTimeout(function() {
+            stream.pipe = function () {
+                setTimeout(function () {
                     stream.emit('error', expectedError);
-                }, 1);
+                }, 0);
                 return stream;
             };
             ppimport.importContent(path, function (error) {
@@ -137,7 +141,80 @@ describe('ppimport', function () {
 
 
     describe('import directory', function () {
-        it('should take a directory as parameter');
+        var archiveCreateSpy;
+        var archiveBulkSpy;
+        var archiveFinalizeSpy;
+        var archiver = require('archiver');
+        var ArchiverCore = require('../node_modules/archiver/lib/modules/core');
+
+        beforeEach(function () {
+            archiveCreateSpy = sinon.spy(archiver, 'create');
+            archiveBulkSpy = sinon.spy(ArchiverCore.prototype, 'bulk');
+            archiveFinalizeSpy = sinon.spy(ArchiverCore.prototype, 'finalize');
+        });
+
+        afterEach(function () {
+            archiver.create.restore();
+            ArchiverCore.prototype.bulk.restore();
+            ArchiverCore.prototype.finalize.restore();
+        });
+
+
+        it('should allow a directory as parameter', function (done) {
+            var path = "./";
+            ppimport.importContent(path, function (error) {
+                expect(error).to.be.undefined;
+                done();
+            });
+        });
+
+        it('should create an archiver with format zip', function (done) {
+            var path = "./";
+            ppimport.importContent(path, function (error) {
+                expect(error).to.be.undefined;
+                expect(archiveCreateSpy.calledOnce).to.be.ok;
+                expect(archiveCreateSpy.getCall(0).args[0]).to.be.string('zip');
+                done();
+            });
+        });
+
+
+        it('should bulk archive all xml files within the given directory', function (done) {
+            var path = "./";
+            ppimport.importContent(path, function (error) {
+                expect(error).to.be.undefined;
+                expect(archiveBulkSpy.calledOnce).to.be.ok;
+                expect(archiveBulkSpy.getCall(0).args[0][0].cwd).to.be.string(__dirname + '/');
+                expect(archiveBulkSpy.getCall(0).args[0][0].src[0]).to.be.string('**/*.xml');
+                expect(archiveBulkSpy.getCall(0).args[0][0].expand).to.be.thruthy;
+                done();
+            });
+        });
+
+        it('should result in a ArchiveError when an error on the archiver library occurs', function (done) {
+            var path = "./";
+            var expectedCause = new Error();
+            setTimeout(function () {
+                ArchiverCore.emit('error', expectedCause);
+            }, 50);
+            ppimport.importContent(path, function (error) {
+                expect(error).to.be.an.instanceOf(ppimport.ArchiveError);
+                expect(error.message).to.be.a.string('Archiving failed, see cause for more info');
+                expect(error.cause).to.be.equal(expectedCause);
+                done();
+            });
+        });
+
+        it('should finalize the archive ', function (done) {
+            var path = "./";
+            ppimport.importContent(path, function (error) {
+                expect(error).to.be.undefined;
+                expect(archiveFinalizeSpy.calledOnce).to.be.ok;
+                done();
+            });
+        });
+
+        it('should recurse a directory structure');
     });
 
 
