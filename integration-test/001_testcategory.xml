@@ -1,0 +1,26 @@
+<batch xmlns="http://www.polopoly.com/polopoly/cm/xmlio">
+
+    <!-- Create the Test Automatic Category -->
+    <content>
+        <metadata>
+            <contentid>
+                <externalid>testautomatic2</externalid>
+                <major>Article</major>
+            </contentid>
+            <input-template>
+                <externalid>p.DefaultArticle</externalid>
+            </input-template>
+            <security-parent>
+                <major>2</major>
+                <minor>1</minor>
+            </security-parent>
+        </metadata>
+        <component group="title" name="value">test automatic</component>
+        <contentref group="polopoly.Parent" name="insertParentId">
+            <contentid>
+                <major>2</major>
+                <minor>1</minor>
+            </contentid>
+        </contentref>
+    </content>
+</batch>

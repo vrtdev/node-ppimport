@@ -18,9 +18,20 @@ var ppimport = require("../lib/ppimport")(JSON.parse(fs.readFileSync(getAbsolute
 
 
 describe('ppimport', function () {
-    describe('import file', function () {
+    describe('import single file', function () {
          it('should return a 200', function (done) {
-            var path = "./001_testcategory_deredactie.xml";
+            var path = "./001_testcategory.xml";
+            ppimport.importContent(path, function (error) {
+                console.log(error);
+                expect(error).to.be.undefined;
+                done();
+            });
+        });
+    });
+
+    describe('import directory', function () {
+        it('should return a 200', function (done) {
+            var path = "./";
             ppimport.importContent(path, function (error) {
                 console.log(error);
                 expect(error).to.be.undefined;
