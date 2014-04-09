@@ -7,6 +7,9 @@
     "import"
   ],
   "main": "lib/ppimport.js",
+  "bin": {
+    "ppimport": "lib/cli.js"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -37,6 +40,10 @@
   },
   "dependencies": {
     "request": "^2.34.0",
-    "archiver": "^0.8.1"
+    "archiver": "^0.8.1",
+    "minimist": "0.0.8",
+    "dustjs-linkedin": "^2.3.4",
+    "walker": "^1.0.6",
+    "async": "^0.7.0"
   }
 }

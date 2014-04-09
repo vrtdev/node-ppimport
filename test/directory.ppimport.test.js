@@ -61,23 +61,23 @@ describe('ppimport', function () {
 
 
         it('should allow a directory as parameter', function (done) {
-            var path = "./";
+            var path = "./test";
             finalize = function () {
                 requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
             }
             ppimport.importContent(path, function (error) {
-                expect(error).to.be.undefined;
+                expect(error).to.be.null;
                 done();
             });
         });
 
         it('should create an archiver with format zip', function (done) {
-            var path = "./";
+            var path = "./test";
             finalize = function () {
                 requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
             }
             ppimport.importContent(path, function (error) {
-                expect(error).to.be.undefined;
+                expect(error).to.be.null;
                 expect(archiveCreateSpy.calledOnce).to.be.ok;
                 expect(archiveCreateSpy.getCall(0).args[0]).to.be.equal('zip');
                 done();
@@ -85,12 +85,12 @@ describe('ppimport', function () {
         });
 
         it('should pipe archive to stream', function (done) {
-            var path = "./";
+            var path = "./test";
             finalize = function () {
                 requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
             }
             ppimport.importContent(path, function (error) {
-                expect(error).to.be.undefined;
+                expect(error).to.be.null;
                 expect(archivePipeStub.calledOnce).to.be.ok;
                 done();
             });
@@ -98,14 +98,14 @@ describe('ppimport', function () {
 
 
         it('should bulk archive all xml files within the given directory', function (done) {
-            var path = "./";
+            var path = process.cwd() + '/test';
             finalize = function () {
                 requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
             }
             ppimport.importContent(path, function (error) {
-                expect(error).to.be.undefined;
+                expect(error).to.be.null;
                 expect(archiveBulkSpy.calledOnce).to.be.thruthy;
-                expect(archiveBulkSpy.getCall(0).args[0][0].cwd).to.be.equal(__dirname + '/');
+                expect(archiveBulkSpy.getCall(0).args[0][0].cwd).to.be.equal(process.cwd() + '/test');
                 expect(archiveBulkSpy.getCall(0).args[0][0].src[0]).to.be.equal('**/*.xml');
                 expect(archiveBulkSpy.getCall(0).args[0][0].expand).to.be.thruthy;
                 done();
@@ -114,7 +114,7 @@ describe('ppimport', function () {
 
 
         it('should result in an Error when piping yields an error', function (done) {
-            var path = "./";
+            var path = "./test";
             var expectedError = new Error('expected');
             ArchiverCore.prototype.pipe.restore();
             archivePipeStub = sinon.stub(ArchiverCore.prototype, 'pipe', function () {
@@ -132,7 +132,7 @@ describe('ppimport', function () {
 
         it('should result in a ArchiveError when an error on the archiver library occurs', function (done) {
             var expectedCause = new Error();
-            var path = './';
+            var path = './test';
             ArchiverCore.prototype.pipe.restore();
             archivePipeStub = sinon.stub(ArchiverCore.prototype, 'pipe', function () {
                 archiveCreateSpy.returnValues[0].emit('error', expectedCause);
@@ -147,19 +147,19 @@ describe('ppimport', function () {
         });
 
         it('should finalize the archive ', function (done) {
-            var path = "./";
+            var path = "./test";
             finalize = function () {
                 requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
             }
             ppimport.importContent(path, function (error) {
-                expect(error).to.be.undefined;
+                expect(error).to.be.null;
                 expect(archiveFinalizeStub.calledOnce).to.be.ok;
                 done();
             });
         });
 
         it('should send the zip file to polopoly via HTTP communication and should have content-type application/octet-stream as options', function (done) {
-            var path = "./";
+            var path = "./test";
             finalize = function () {
                 requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
             }
@@ -170,7 +170,7 @@ describe('ppimport', function () {
         });
 
         it('should send the zip file to polopoly via HTTP communication', function (done) {
-            var path = "./";
+            var path = "./test";
             finalize = function () {
                 requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
             }

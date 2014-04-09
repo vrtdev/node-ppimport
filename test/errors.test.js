@@ -34,6 +34,11 @@ describe('errors', function () {
         it('should have a stack trace containing a reference to this test', function () {
             expect(error.stack).to.have.a.string(__filename);
         });
+
+        it('should have a path as given in the constructor', function () {
+            error = new errors.PathError('message', 'path');
+            expect(error.path).to.be.equal('path');
+        });
     });
 
     describe(' - HttpError', function () {

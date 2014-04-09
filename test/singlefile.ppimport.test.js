@@ -18,6 +18,12 @@ describe('ppimport', function () {
             this.pipe = function () {
                 return this
             };
+            this.write = function() {
+                return this;
+            }
+            this.end = function() {
+                return this;
+            }
             events.EventEmitter.call(this);
         };
         var stream;
@@ -26,7 +32,7 @@ describe('ppimport', function () {
         beforeEach(function () {
             stream = new Stream();
             fsStub = sinon.stub(fs, 'createReadStream').returns(stream);
-            requestStub = sinon.stub(request, 'put');
+            requestStub = sinon.stub(request, 'put').returns(stream);
             defaultsRequestStub = sinon.stub(request, 'defaults').returns(request);
         });
 
@@ -41,21 +47,22 @@ describe('ppimport', function () {
             ppimport.importContent(path, function (error) {
                 expect(error).to.be.an.instanceOf(errors.PathError);
                 expect(error.message).to.be.equal('Invalid path');
+                expect(error.path).to.be.equal(process.cwd() + "/non-existing-file");
                 done();
             });
         });
 
         it('should not result in an error when passing a path to an existing file', function (done) {
-            var path = "./FunnY.XmL";
+            var path = "./test/FunnY.XmL";
             requestStub.yields(null, {statusCode: 200}, null);
             ppimport.importContent(path, function (error) {
-                expect(error).to.be.undefined;
+                expect(error).to.be.null;
                 done();
             });
         });
 
-        it('should result in a FormatError when passing a path to a file which is not an XML file', function (done) {
-            var path = "simple-existing-file";
+        it('should result in a FormatError when passing a path to a file which is not an XML or DUST file', function (done) {
+            var path = "test/simple-existing-file";
             ppimport.importContent(path, function (error) {
                 expect(error).to.be.an.instanceOf(errors.FormatError);
                 expect(error.message).to.be.equal('Invalid format, only XML files are supported');
@@ -63,8 +70,17 @@ describe('ppimport', function () {
             });
         });
 
-        it('should send the XML file to polopoly via HTTP communication', function (done) {
-            var path = "./file.xml";
+        it('should send the transfomed DUST file via HTTP', function(done) {
+            var path = "test/file.dust";
+            requestStub.yields(null, {statusCode: 200}, null);
+            ppimport.importContent(path, function (error) {
+                expect(requestStub.getCall(0).args[0]).to.be.equal('http://test.url?result=true&username=user%20name&password=password');
+                done();
+            });
+        });
+
+        it('should send the XML file to polopoly via HTTP', function (done) {
+            var path = "./test/file.xml";
             requestStub.yields(null, {statusCode: 200}, null);
             ppimport.importContent(path, function (error) {
                 expect(requestStub.getCall(0).args[0]).to.be.equal('http://test.url?result=true&username=user%20name&password=password');
@@ -73,7 +89,7 @@ describe('ppimport', function () {
         });
 
         it('should send the XML file to polopoly via HTTP communication and should have content-type text/xml as options', function (done) {
-            var path = "./file.xml";
+            var path = "./test/file.xml";
             requestStub.yields(null, {statusCode: 200}, null);
             ppimport.importContent(path, function (error) {
                 expect(JSON.stringify(defaultsRequestStub.getCall(0).args[0])).to.be.equal(JSON.stringify({headers: {'Content-Type': 'text/xml'}}));
@@ -82,7 +98,7 @@ describe('ppimport', function () {
         });
 
         it('should send the XML file to localhost when no url is given to the constructor.', function (done) {
-            var path = "./file.xml";
+            var path = "./test/file.xml";
             var defaultPpImport = require('../lib/ppimport')();
             requestStub.yields(null, {statusCode: 200}, null);
             defaultPpImport.importContent(path, function () {
@@ -92,7 +108,7 @@ describe('ppimport', function () {
         });
 
         it('should result in a HttpError when the server returns a status code not in 200 range', function (done) {
-            var path = "./file.xml";
+            var path = "./test/file.xml";
             requestStub.yields(null, {statusCode: 500}, "body");
             ppimport.importContent(path, function (error) {
                 expect(error).to.be.an.instanceOf(errors.HttpError);
@@ -102,16 +118,16 @@ describe('ppimport', function () {
         });
 
         it('should not result in an Error when the server returns a status code in 200 range', function (done) {
-            var path = "./file.xml";
+            var path = "./test/file.xml";
             requestStub.yields(null, {statusCode: 201}, null);
             ppimport.importContent(path, function (error) {
-                expect(error).to.be.undefined;
+                expect(error).to.be.null;
                 done();
             });
         });
 
         it('should result in an HttpError when the request fails, holding the originating error as cause', function (done) {
-            var path = "./file.xml";
+            var path = "./test/file.xml";
             var expectedCause = new Error('error');
             requestStub.yields(expectedCause, null, null);
             ppimport.importContent(path, function (error) {
@@ -123,7 +139,7 @@ describe('ppimport', function () {
         });
 
         it('should result in an Error when piping yields an error', function (done) {
-            var path = "./file.xml";
+            var path = "./test/file.xml";
             var expectedError = new Error('expected');
             stream.pipe = function () {
                 setTimeout(function () {
@@ -136,6 +152,8 @@ describe('ppimport', function () {
                 done();
             });
         });
+
+
 
     });
 });
