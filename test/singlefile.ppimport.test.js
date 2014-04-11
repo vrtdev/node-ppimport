@@ -1,6 +1,6 @@
 var chai = require("chai");
 var expect = chai.expect;
-var ppimport = require("../lib/ppimport")({polopolyUrl: 'http://test.url', username: 'user name', password: 'password'});
+
 var sinon = require('sinon');
 var request = require('request');
 var fs = require('fs');
@@ -10,6 +10,10 @@ var errors = require('../lib/errors');
 
 describe('ppimport', function () {
     describe('import file', function () {
+        var singleFileHookFunction = function (path, callback) {
+            callback(null, stream);
+        };
+        var ppimport = require("../lib/ppimport")({polopolyUrl: 'http://test.url', username: 'user name', password: 'password', hooks: {'.TEMPLATE': {singleFileFunction: singleFileHookFunction}}});
         var requestStub;
         var defaultsRequestStub;
         var fsStub;
@@ -18,10 +22,10 @@ describe('ppimport', function () {
             this.pipe = function () {
                 return this
             };
-            this.write = function() {
+            this.write = function () {
                 return this;
             }
-            this.end = function() {
+            this.end = function () {
                 return this;
             }
             events.EventEmitter.call(this);
@@ -61,20 +65,43 @@ describe('ppimport', function () {
             });
         });
 
-        it('should result in a FormatError when passing a path to a file which is not an XML or DUST file', function (done) {
+        it('should result in a FormatError when passing a path to a file which is not a hook supported file', function (done) {
             var path = "test/simple-existing-file";
             ppimport.importContent(path, function (error) {
                 expect(error).to.be.an.instanceOf(errors.FormatError);
-                expect(error.message).to.be.equal('Invalid format, only XML files are supported');
+                expect(error.message).to.be.equal('Invalid format, only .TEMPLATE,.XML,.DUST files are supported');
                 done();
             });
         });
 
-        it('should send the transfomed DUST file via HTTP', function(done) {
-            var path = "test/file.dust";
+        it('should send the result of a specific hook via HTTP', function (done) {
+            var path = "test/file.template";
             requestStub.yields(null, {statusCode: 200}, null);
             ppimport.importContent(path, function (error) {
                 expect(requestStub.getCall(0).args[0]).to.be.equal('http://test.url?result=true&username=user%20name&password=password');
+                done();
+            });
+        });
+
+        it('should not allow the singleFileFunction hook to return anything else but an object supporting the pipe method', function (done) {
+            var path = "test/file.template";
+            stream = '';
+            ppimport.importContent(path, function (error) {
+                expect(error).to.be.instanceOf(TypeError);
+                done();
+            });
+        });
+
+        it('should report the hook function error when the hook callback sends one', function (done) {
+            singleFileHookFunction = function (path, callback) {
+                callback(expectedError);
+            };
+            var ppimport = require("../lib/ppimport")({polopolyUrl: 'http://test.url', username: 'user name', password: 'password', hooks: {'.TEMPLATE': {singleFileFunction: singleFileHookFunction}}});
+            var path = "test/file.template";
+            var expectedError = new Error();
+
+            ppimport.importContent(path, function (error) {
+                expect(error).to.be.equal(expectedError);
                 done();
             });
         });
@@ -152,8 +179,5 @@ describe('ppimport', function () {
                 done();
             });
         });
-
-
-
     });
 });

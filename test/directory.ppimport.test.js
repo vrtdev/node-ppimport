@@ -24,18 +24,19 @@ describe('ppimport', function () {
                 return this;
             };
             events.EventEmitter.call(this);
-        };
+        }
+
         var stream;
         Stream.prototype.__proto__ = events.EventEmitter.prototype;
 
         var finalize = function () {
-        }
+        };
 
         var standin = {
             finalize: function () {
                 finalize();
             }
-        }
+        };
 
         beforeEach(function () {
             stream = new Stream();
@@ -146,7 +147,11 @@ describe('ppimport', function () {
             });
         });
 
-        it('should finalize the archive ', function (done) {
+        it('should call any given archive hooks', function(done) {
+            done();
+        });
+
+        it('should finalize the archive when hooks report back', function (done) {
             var path = "./test";
             finalize = function () {
                 requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
