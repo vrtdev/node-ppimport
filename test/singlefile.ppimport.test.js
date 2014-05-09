@@ -10,7 +10,7 @@ var errors = require('../lib/errors');
 
 describe('ppimport', function () {
     describe('import file', function () {
-        var singleFileHookFunction = function (path, callback) {
+        var singleFileHookFunction = function (path, context, callback) {
             callback(null, stream);
         };
         var ppimport = require("../lib/ppimport")({polopolyUrl: 'http://test.url', username: 'user name', password: 'password', hooks: {'.TEMPLATE': {singleFileFunction: singleFileHookFunction}}});
@@ -93,7 +93,7 @@ describe('ppimport', function () {
         });
 
         it('should report the hook function error when the hook callback sends one', function (done) {
-            singleFileHookFunction = function (path, callback) {
+            singleFileHookFunction = function (path, context, callback) {
                 callback(expectedError);
             };
             var ppimport = require("../lib/ppimport")({polopolyUrl: 'http://test.url', username: 'user name', password: 'password', hooks: {'.TEMPLATE': {singleFileFunction: singleFileHookFunction}}});

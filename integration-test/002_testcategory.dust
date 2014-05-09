@@ -15,7 +15,7 @@
                 <minor>1</minor>
 			</security-parent>
 		</metadata>
-		<component group="title" name="value">test automatic</component>
+		<component group="title" name="value">{title}</component>
 		<contentref group="polopoly.Parent" name="insertParentId">
 			<contentid>
 				<major>2</major>

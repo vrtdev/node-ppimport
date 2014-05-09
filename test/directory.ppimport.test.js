@@ -147,10 +147,6 @@ describe('ppimport', function () {
             });
         });
 
-        it('should call any given archive hooks', function(done) {
-            done();
-        });
-
         it('should finalize the archive when hooks report back', function (done) {
             var path = "./test";
             finalize = function () {
@@ -166,7 +162,11 @@ describe('ppimport', function () {
         it('should send the zip file to polopoly via HTTP communication and should have content-type application/octet-stream as options', function (done) {
             var path = "./test";
             finalize = function () {
-                requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
+                if (requestStub.getCall(0)) {
+                    requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
+                } else {
+                    console.log("requestStub never called!", requestStub);
+                }
             }
             ppimport.importContent(path, function (error) {
                 expect(JSON.stringify(defaultsRequestStub.getCall(0).args[0])).to.be.equal(JSON.stringify({headers: {'Content-Type': 'application/octet-stream'}}));
@@ -178,9 +178,21 @@ describe('ppimport', function () {
             var path = "./test";
             finalize = function () {
                 requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
-            }
+            };
             ppimport.importContent(path, function (error) {
                 expect(requestStub.getCall(0).args[0]).to.be.equal('http://test.url?result=true&username=user%20name&password=password&type=jar');
+                done();
+            });
+        });
+
+        it('should use the context information given to the spec', function (done) {
+            var path = "./test";
+            finalize = function () {
+                requestStub.getCall(0).args[1](null, {statusCode: 200}, null);
+            };
+            ppimport.importContent(path, {"someval": 1}, function (error) {
+                expect(error).to.be.null;
+                expect(archiveFinalizeStub.calledOnce).to.be.ok;
                 done();
             });
         });
