@@ -119,6 +119,22 @@ exports.directoryFunction = function (path, archive, context, callback) {
 
 See http://nodejs.org/api/stream.html for more information on streams
 
+To use your custom hook, add your hook to the configuration options of the importer as so:
+
+```javascript
+var myHook = require('myExtHook');
+var options = {
+    "polopolyUrl": "http://localhost/polopoly/import",
+    "username": "editor",
+    "password": "edpass",
+    "hooks": {".EXT": myHook}
+}
+var ppimport = require('ppimport')(options);
+```
+
+The .EXT should be replaced by the file extension your hook is supporting.
+
+
 References & extra info
 -----------------------
 
