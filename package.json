@@ -1,6 +1,6 @@
 {
   "name": "ppimport",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Polopoly content importer for node.js",
   "keywords": [
     "polopoly",
