@@ -19,7 +19,7 @@ If you plan on using the importer in a terminal, we suggest installing ppimport 
 npm install -g ppimport
 ```
 
-This allows you to run the CLI wit ease.
+This allows you to run the CLI with ease.
 
 If you plan on integrating ppimport into your own node module, you should install using the following command. Be sure to run the command in your module's root folder (folder containing the package.json file). 
 
@@ -57,10 +57,10 @@ Examples:
 
 ```
 
-Use ppimport as dependecny in your own module
+Use ppimport as dependency in your own module
 ---------------------------------------------
 
-To use the importer, your should require it in your code as so:
+To use the importer, your should `require` it in your code as so:
 
 ```javascript
 var options = {
@@ -73,7 +73,7 @@ var ppimport = require('ppimport')(options);
 
 The options object is used to configure the polopoly user credentials and to point to the correct import location.
 
-Now you can call the importContent function on ppimport as so:
+Now you can call the `importContent` function on ppimport as so:
 
 ```javascript
 ppimport.importContent('../path/to/file/or/folder/to/import', function(error) {
@@ -83,7 +83,7 @@ ppimport.importContent('../path/to/file/or/folder/to/import', function(error) {
 }); 
 ```
 
-If you are passing a template file (such as a .dust file) or a directory containing template files, you will probably need to also pass a context object, so the templating engine can use that context to resolve it's placeholders. You do this as so:
+If you are passing a template file (such as a .dust file) or a directory containing template files, you will probably also need to pass a context object, so the templating engine can use that context to resolve it's placeholders. You do this as so:
 
 ```javascript
 var context = {
@@ -99,10 +99,10 @@ ppimport.importContent('../path/to/file/or/folder/to/import', context, function(
 
 Adding your own file type hooks
 -------------------------------
-If you prefer to use a templating engine other then dust, you can always provide you own hook. A hook is a node.js module exposing two methods:
-* singleFileFunction: called when importing a single file. This function should create a stream for the file/rendered template that is to be imported. When the stream has been created, call the passed in callback with null as first parameter and the stream as the second parameter. When an error occurs just pass the error parameter to the callback.
+If you prefer to use a templating engine other then dust, you can always provide your own hook. A hook is a node.js module exposing two methods:
+* `singleFileFunction`: called when importing a single file. This function should create a stream for the file/rendered template that is to be imported. When the stream has been created, call the passed in callback with null as first parameter and the stream as the second parameter. When an error occurs, pass it as the first and only parameter to the callback. 
 	
-* directoryFunction: called when importing an entire directory. In this function you should add the files your hook supports under the passed in path to the passed in archive. Once you are ready, be sure to call the passed in callback. If an error occurs, pass it as single parameter to the callback. 
+* `directoryFunction`: called when importing an entire directory. In this function you should add the files your hook supports under the passed in path to the passed in archive. Once you are ready, be sure to call the passed in callback. When an error occurs, pass it as the first and only to the callback. 
 
 ```javascript
 exports.singleFileFunction = function (path, context, callback) {
@@ -119,7 +119,7 @@ exports.directoryFunction = function (path, archive, context, callback) {
 
 See http://nodejs.org/api/stream.html for more information on streams
 
-To use your custom hook, add your hook to the configuration options of the importer as so:
+To use your custom hook, add it to the configuration options of the importer as so:
 
 ```javascript
 var myHook = require('myExtHook');
